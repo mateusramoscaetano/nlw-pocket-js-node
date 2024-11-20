@@ -49,6 +49,8 @@ app.register(getWeekPendingGoalsRoute)
 app.register(authenticateFromGithubRoute)
 app.register(getProfile)
 
-app.listen({ port: 3333 }).then(() => {
+const port = Number(env.PORT) || 3333
+
+app.listen({ port }).then(() => {
   console.log('HTTP server running!')
 })
