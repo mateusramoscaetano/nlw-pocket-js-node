@@ -51,6 +51,15 @@ app.register(getProfile)
 
 const port = Number(env.PORT) || 3333
 
-app.listen({ port }).then(() => {
-  console.log('HTTP server running!')
-})
+app
+  .listen({
+    port,
+    host: '0.0.0.0',
+  })
+  .then(() => {
+    console.log(`HTTP server running on port ${port}`)
+  })
+  .catch(err => {
+    console.error('Error starting server:', err)
+    process.exit(1)
+  })
