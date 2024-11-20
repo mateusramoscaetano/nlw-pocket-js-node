@@ -19,7 +19,16 @@ import { getProfile } from './routes/get-profile'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
-app.register(fastifyCors, { origin: '*' })
+app.register(fastifyCors, {
+  origin: (origin, callback) => {
+    const allowedOrigins = ['http://localhost:5173']
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'), false)
+    }
+  },
+})
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
