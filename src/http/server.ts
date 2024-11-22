@@ -16,18 +16,14 @@ import { authenticateFromGithubRoute } from './routes/authenticate-from-github'
 import { env } from '@/env'
 import fastifyJwt from '@fastify/jwt'
 import { getProfile } from './routes/get-profile'
+import { resolve } from 'node:path'
+import { writeFile } from 'node:fs/promises'
+import { getUserExperienceAndLevelRoute } from './routes/get-user-level-and-experience'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
 app.register(fastifyCors, {
-  origin: (origin, callback) => {
-    const allowedOrigins = ['http://localhost:5173']
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'), false)
-    }
-  },
+  origin: '*',
 })
 
 app.register(fastifyJwt, {
@@ -57,6 +53,7 @@ app.register(getWeekSummaryRoute)
 app.register(getWeekPendingGoalsRoute)
 app.register(authenticateFromGithubRoute)
 app.register(getProfile)
+app.register(getUserExperienceAndLevelRoute)
 
 const port = Number(env.PORT) || 3333
 
@@ -72,3 +69,13 @@ app
     console.error('Error starting server:', err)
     process.exit(1)
   })
+
+if (env.NODE_ENV === 'development') {
+  const specFile = resolve(__dirname, '../../swagger.json')
+
+  app.ready().then(() => {
+    const spec = JSON.stringify(app.swagger(), null, 2)
+
+    writeFile(specFile, spec).then(() => console.log('swagger spec generated'))
+  })
+}

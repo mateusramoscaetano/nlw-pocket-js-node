@@ -6,6 +6,7 @@ const envSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string(),
   JWT_SECRET: z.string(),
   PORT: z.string(),
+  NODE_ENV: z.string(),
 })
 
 export const env = envSchema.parse(process.env)
